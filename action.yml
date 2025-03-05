@@ -37,8 +37,10 @@ runs:
         
     - name: Fail workflow due to scan failing
       if: steps.trufflehog-scan.outcome == 'failure'
-      run: exit 1    
+      run: exit 1
+      shell: bash
       
     - name: Scan Results Status
       if: steps.trufflehog-scan.outcome == 'success'
       run: echo "NO SECRETS FOUND!"
+      shell: bash
