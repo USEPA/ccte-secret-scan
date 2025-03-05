@@ -1,0 +1,44 @@
+name: 'Trufflehog-Scan'
+description: 'A GitHub Action to scan code for secrets using TruffleHog.'
+author: 'Your Name or Organization'
+inputs:
+  fetch_depth:
+    description: 'Depth to fetch repository history'
+    required: false
+    default: '0'
+  base_branch:
+    description: 'Base branch for TruffleHog scan'
+    required: true
+  extra_args:
+    description: 'Additional arguments for TruffleHog'
+    required: false
+    default: '--debug --only-verified --json'
+  path:
+    description: 'Path to scan'
+    required: false
+    default: './'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: ${{ inputs.fetch_depth }}
+        
+    - name: Scan with TruffleHog OSS
+      id: trufflehog-scan
+      uses: trufflesecurity/trufflehog@main
+      continue-on-error: true
+      with:
+        base: ${{ inputs.base_branch }}
+        extra_args: ${{ inputs.extra_args }}
+        path: ${{ inputs.path }}
+        
+    - name: Fail workflow due to scan failing
+      if: steps.trufflehog-scan.outcome == 'failure'
+      run: exit 1    
+      
+    - name: Scan Results Status
+      if: steps.trufflehog-scan.outcome == 'success'
+      run: echo "NO SECRETS FOUND!"
