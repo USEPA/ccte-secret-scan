@@ -12,7 +12,7 @@ inputs:
   extra_args:
     description: 'Additional arguments for TruffleHog'
     required: false
-    default: '--debug --only-verified --json'
+    default: '--log-level=2 --results=verified,unknown --json'
   path:
     description: 'Path to scan'
     required: false
